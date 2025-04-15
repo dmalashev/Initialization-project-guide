@@ -1,3 +1,5 @@
+# Гайд по инициализации проекта
+
 ## 1. Инициализируем Vite проект
 
 В директории, где будет находится папка с будущим проектом, открываем терминал и вводим следующую команду:
@@ -140,6 +142,8 @@ node_modules
 
 ## 5. Устанавливаем Eslint
 
+### Typescript Eslint
+
 Устанавливаем [typescript-eslint](https://typescript-eslint.io/getting-started/):
 ```bash
 npm install --save-dev eslint @eslint/js typescript-eslint
@@ -157,6 +161,7 @@ export default tseslint.config(
 
 ```
 
+### Eslint + Prettier
 Устанавливаем [eslint-plugin-prettier и eslint-config-prettier](https://www.npmjs.com/package/eslint-plugin-prettier):
 ```bash
 npm install --save-dev eslint-plugin-prettier eslint-config-prettier
@@ -177,6 +182,8 @@ export default tseslint.config(
 );
 
 ```
+
+### Unicorn Plugin
 
 Устанавливаем [eslint-plugin-unicorn](https://www.npmjs.com/package/eslint-plugin-unicorn):
 ```bash
@@ -233,6 +240,8 @@ export default {
 
 ## 6. Устанавливаем Husky, lint-staged, commitlint
 
+### Husky
+
 Устанавливаем [husky](https://typicode.github.io/husky/get-started.html):
 ```bash
 npm install --save-dev husky
@@ -243,6 +252,8 @@ npm install --save-dev husky
 npx husky init
 ```
 Эта команда добавлет папку `.husky` в корень проекта. В папке содержаться файлы хуков. При инициализации автоматически создаётся хук `pre-commit`. Также после выплнения этой команды в `package.json` добавляется скрипт `"prepare": "husky"`.
+
+### lint-staged
 
 Далее установим [lint-staged](https://github.com/lint-staged/lint-staged):
 ```bash
@@ -262,6 +273,8 @@ npm install --save-dev lint-staged
 npx lint-staged
 
 ```
+
+### commitlint
 
 Устанавливаем [commitlint](https://commitlint.js.org/guides/getting-started.html):
 ```bash
