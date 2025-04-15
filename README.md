@@ -94,6 +94,7 @@ export default {
 npm install --save-dev --save-exact prettier
 ```
 
+> [!NOTE]
 > Флаг `--save-exact` нужен для того, чтобы зафиксировать конкретную версию
 
 Далее вводим команду:
@@ -271,6 +272,8 @@ npm install --save-dev @commitlint/config-conventional @commitlint/cli
 ```bash
 echo '{ "extends": ["@commitlint/config-conventional"] }' > .commitlintrc.json
 ```
+
+> [!WARNING]
 > Проверь кодировку кофига. Если она не будет UTF-8, то там могут быть скрытые символы, на которые будет ругаться Prettier. Поменять кодировку можно как в VS Code (справа снизу на панели), так и через NotePad++.
 
 Создаём хук `commit-msg`:
