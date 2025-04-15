@@ -12,21 +12,21 @@ npm create vite@latest
 
 Также в `index.html` вставляем этот шаблон (не забудь поменять title на нужный):
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <script type="module" src="/src/main.ts"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
 </html>
 
 ```
 
-В `package.json` удали `private: true` или что-то типа того, не помню точно.
+В `package.json` удали `private: true`.
 
 ## 2. Обновляем tsconfig
 
@@ -57,7 +57,7 @@ npm create vite@latest
 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "./src",
+    "rootDir": "./src"
   },
   "include": ["src"]
 }
@@ -72,16 +72,17 @@ npm create vite@latest
 npm i vite-plugin-checker -D
 ```
 
-Далее создаём файл `vite.config.ts` и вставляем в него следующее содержимое:
+Далее создаём файл `vite.config.ts` в корне проекта и вставляем в него следующее содержимое:
 ```typescript
-import checker from 'vite-plugin-checker'
+import checker from 'vite-plugin-checker';
+
 export default {
   plugins: [
     checker({
       typescript: true,
     }),
   ],
-}
+};
 
 ```
 
@@ -93,8 +94,7 @@ export default {
 npm install --save-dev --save-exact prettier
 ```
 
-> [!NOTE]
-> флаг `--save-exact` нужен для того, чтобы зафиксировать конкретную версию
+> Флаг `--save-exact` нужен для того, чтобы зафиксировать конкретную версию
 
 Далее вводим команду:
 ```bash
@@ -144,7 +144,7 @@ node_modules
 npm install --save-dev eslint @eslint/js typescript-eslint
 ```
 
-Создаём конфиг `eslint.config.mjs` и добавляем следующее содержимое:
+Создаём конфиг `eslint.config.mjs` в корне проекта и добавляем следующее содержимое:
 ```javascript
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -195,30 +195,32 @@ export default tseslint.config(
   tseslint.configs.recommended,
   eslintConfigPrettier,
   eslintPluginPrettierRecommended,
-  eslintPluginUnicorn.configs.recommended,  // новая строка
-  {                                      // новая строка
-	rules: {                             // новая строка
-	  'unicorn/better-regex': 'warn',    // новая строка
-	},                                   // новая строка
-  },                                     // новая строка
+  eslintPluginUnicorn.configs.recommended, // новая строка
+
+  {                                        // новая строка
+    rules: {                               // новая строка
+      'unicorn/better-regex': 'warn',      // новая строка
+    },                                     // новая строка
+  },                                       // новая строка
 );
 
 ```
 
 Добавляем Eslint в checker в `vite.config.ts`:
 ```typescript
-import checker from 'vite-plugin-checker'
+import checker from 'vite-plugin-checker';
+
 export default {
   plugins: [
     checker({
       typescript: true,
-      eslint: {                                      // новая строка
-        lintCommand: 'eslint "./src/**/*.{ts,js}"',  // новая строка
-        useFlatConfig: true,                         // новая строка
-      },                                             // новая строка
+      eslint: {                                     // новая строка
+        lintCommand: 'eslint "./src/**/*.{ts,js}"', // новая строка
+        useFlatConfig: true,                        // новая строка
+      },                                            // новая строка
     }),
   ],
-}
+};
 
 ```
 
@@ -228,5 +230,52 @@ export default {
 "lint:fix": "eslint --fix"
 ```
 
+## 6. Устанавливаем Husky, lint-staged, commitlint
+
+Устанавливаем [husky](https://typicode.github.io/husky/get-started.html):
+```bash
+npm install --save-dev husky
+```
+
+Запускаем команду для первичной настройки husky а проекте:
+```bash
+npx husky init
+```
+Эта команда добавлет папку `.husky` в корень проекта. В папке содержаться файлы хуков. При инициализации автоматически создаётся хук `pre-commit`. Также после выплнения этой команды в `package.json` добавляется скрипт `"prepare": "husky"`.
+
+Далее установим [lint-staged](https://github.com/lint-staged/lint-staged):
+```bash
+npm install --save-dev lint-staged
+```
+
+Добавляем настройки lint-staged в `package.json`. В корне конфига помещаем следующий код (например, между `"scripts"` и `"devDependencies"`):
+```json
+"lint-staged": {
+  "*": "prettier --write",
+  "*.ts": "eslint --fix"
+},
+```
+
+Далее в файле хука `pre-commit` меняем содержимое на следующее:
+```
+npx lint-staged
+
+```
+
+Устанавливаем [commitlint](https://commitlint.js.org/guides/getting-started.html):
+```bash
+npm install --save-dev @commitlint/config-conventional @commitlint/cli
+```
+
+Создаём конфиг путём запуска следующей команды:
+```bash
+echo '{ "extends": ["@commitlint/config-conventional"] }' > .commitlintrc.json
+```
+> Проверь кодировку кофига. Если она не будет UTF-8, то там могут быть скрытые символы, на которые будет ругаться Prettier. Поменять кодировку можно как в VS Code (справа снизу на панели), так и через NotePad++.
+
+Создаём хук `commit-msg`:
+```bash
+echo 'npx --no commitlint --edit $1' > .husky/commit-msg
+```
 -----------------------------------
-Также можно добавить stylelint (очень полезная штука, возможно стоит ещё глянуть плагин, чтобы она с prettier не конфликтовала), husky с lint-staged на pre-commit хуке и commitlint на commit-msg хуке.
+Также можно добавить stylelint (очень полезная штука, возможно стоит ещё глянуть плагин, чтобы она с prettier не конфликтовала).
